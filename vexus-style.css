@@ -279,7 +279,7 @@ body {
     transition: left 0.6s ease;
 }
 
-.vision-card:hover {
+.vision-card.active {
     transform: rotateY(-5deg) translateZ(20px) scale(1.02);
     border-color: #00ffff;
     box-shadow: 
@@ -287,11 +287,11 @@ body {
         0 0 50px rgba(255, 0, 255, 0.1);
 }
 
-.vision-card:nth-child(1):hover {
+.vision-card:nth-child(1).active {
     transform: rotateY(-5deg) translateZ(20px) scale(1.02);
 }
 
-.vision-card:hover::before {
+.vision-card.active::before {
     left: 100%;
 }
 
@@ -299,11 +299,11 @@ body {
     transform: translateY(-10px);
 }
 
-.vision-card:nth-child(2):hover {
+.vision-card:nth-child(2).active {
     transform: rotateY(0deg) translateY(-15px) translateZ(25px) scale(1.05);
 }
 
-.vision-card:nth-child(3):hover {
+.vision-card:nth-child(3).active {
     transform: rotateY(5deg) translateZ(20px) scale(1.02);
 }
 

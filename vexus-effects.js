@@ -286,3 +286,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+    // Scroll-based vision card animations
+    function handleVisionCardScroll() {
+        const cards = document.querySelectorAll('.vision-card');
+        const centerLine = window.innerHeight / 2;
+        
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cardCenter = rect.top + rect.height / 2;
+            
+            if (Math.abs(cardCenter - centerLine) < 100) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', handleVisionCardScroll);
+    window.addEventListener('resize', handleVisionCardScroll);
+    handleVisionCardScroll(); // Initial check
