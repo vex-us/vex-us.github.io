@@ -18,6 +18,13 @@ body {
     padding: 20px;
 }
 
+@media (max-width: 650px) {
+    .cyberpunk-container {
+        max-width: 100vw;
+        padding: 10px;
+    }
+}
+
 /* Vexus Header */
 .vexus-header {
     position: relative;
@@ -227,7 +234,18 @@ body {
     font-size: 2rem;
     color: #ff00ff;
     letter-spacing: 3px;
-    margin-bottom: 2rem;
+    margin: 4rem 0 2rem 0;
+}
+
+.content-section:first-of-type .section-title {
+    margin-top: 2rem;
+}
+
+@media (max-width: 400px) {
+    .section-title {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
 }
 
 .content-grid {
@@ -409,4 +427,61 @@ body {
     .vision-card:hover {
         transform: scale(1.02);
     }
+}
+/* Terminal Styles */
+.cyber-terminal {
+    background: linear-gradient(135deg, rgba(10, 0, 21, 0.95), rgba(26, 0, 51, 0.95));
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    margin: 2rem auto;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    width: 100%;
+    max-width: 600px;
+}
+
+
+
+.terminal-header {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #00ffff;
+    color: #00ffff;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.terminal-output {
+    padding: 1rem;
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    color: #00ffff;
+    white-space: pre;
+    line-height: 1.2;
+    font-family: 'Courier New', monospace;
+}
+
+.terminal-input-line {
+    display: flex;
+    padding: 0 1rem 1rem;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.terminal-prompt {
+    color: #ff00ff;
+    margin-right: 0.5rem;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    outline: none;
+}
+
+.terminal-input::placeholder {
+    color: rgba(0, 255, 255, 0.5);
 }

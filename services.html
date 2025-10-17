@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXUS VENTURES - Services & Solutions</title>
+    <link rel="stylesheet" href="vexus-style.css">
+</head>
+<body>
+    <div class="cyberpunk-container">
+        <!-- Vexus Header with Interactive Effect -->
+        <div class="vexus-header">
+            <div class="text-reveal-zone"></div>
+            <div class="brand-text">VEXUS</div>
+            <div class="orbiter sprite-1"></div>
+            <div class="orbiter sprite-2"></div>
+            <div class="orbiter sprite-3"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="cyber-nav">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="services.html" class="nav-link active">SERVICES</a>
+            <a href="portfolio.html" class="nav-link">PORTFOLIO</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="cyber-main">
+            <section class="hero-section">
+                <h1 class="cyber-title">SERVICES & SOLUTIONS</h1>
+                <p class="tagline">Comprehensive Technical Expertise</p>
+            </section>
+
+            <div class="cyber-terminal">
+                <div class="terminal-header">VEXUS TERMINAL v1.0</div>
+                <div class="terminal-output" id="terminal-output"></div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt">$</span>
+                    <input type="text" class="terminal-input" id="terminal-input" placeholder="Type 'start' to begin the game">
+                </div>
+            </div>
+
+            <section class="content-section">
+                <h2 class="section-title">DATA ANALYTICS</h2>
+                <div class="content-grid">
+                    <div class="vision-card">
+                        <h3>BUSINESS INTELLIGENCE</h3>
+                        <p>Transform raw data into <span class="highlight-magenta">actionable insights</span> through advanced analytical frameworks and visualization platforms.</p>
+                    </div>
+                    <div class="vision-card">
+                        <h3>PREDICTIVE MODELING</h3>
+                        <p>Leverage <span class="highlight-magenta">machine learning algorithms</span> to forecast trends and optimize decision-making processes.</p>
+                    </div>
+                    <div class="vision-card">
+                        <h3>DATA ARCHITECTURE</h3>
+                        <p>Design scalable <span class="highlight-magenta">data infrastructure</span> supporting enterprise-level analytics and reporting requirements.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2 class="section-title">PROCESS AUTOMATION</h2>
+                <div class="content-grid">
+                    <div class="vision-card">
+                        <h3>WORKFLOW OPTIMIZATION</h3>
+                        <p>Streamline operations through <span class="highlight-cyan">intelligent automation</span> reducing manual effort and error rates.</p>
+                    </div>
+                    <div class="vision-card">
+                        <h3>SYSTEM INTEGRATION</h3>
+                        <p>Connect disparate systems with <span class="highlight-cyan">seamless API solutions</span> enabling unified data flow.</p>
+                    </div>
+                    <div class="vision-card">
+                        <h3>CUSTOM DEVELOPMENT</h3>
+                        <p>Build tailored <span class="highlight-cyan">programmatic solutions</span> addressing specific operational challenges.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2 class="section-title">CONSULTING & STRATEGY</h2>
+                <div class="approach-content">
+                    <p>Our consulting approach combines <span class="highlight-magenta">technical expertise</span> with strategic business insight. We work directly with stakeholders to understand operational requirements and design solutions that deliver <span class="highlight-cyan">measurable ROI</span>.</p>
+                    <p>From initial assessment through implementation and ongoing support, we provide <span class="highlight-magenta">end-to-end project management</span> ensuring successful deployment of complex technical initiatives.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="cyber-footer">
+            <p>&copy; 2024 VEXUS VENTURES</p>
+        </footer>
+    </div>
+
+    <script src="vexus-effects.js"></script>
+    <script src="cup-game.js"></script>
+    <script>
+        function adjustTerminalFontSize() {
+            const terminal = document.querySelector('.cyber-terminal');
+            const output = document.getElementById('terminal-output');
+            const input = document.querySelector('.terminal-input');
+            
+            const viewportWidth = window.innerWidth;
+            const fontSize = Math.max(8, Math.min(32, (viewportWidth - 400) * 24 / 1200 + 8));
+            
+            output.style.fontSize = fontSize + 'px';
+            input.style.fontSize = fontSize + 'px';
+        }
+
+        const game = new CupGame();
+        const input = document.getElementById('terminal-input');
+
+        adjustTerminalFontSize();
+        window.addEventListener('resize', adjustTerminalFontSize);
+
+        game.output("VEXUS TERMINAL v1.0 - Cup & Ball Game Demo");
+        game.output("Type:\n'start' to begin,\n'help' for commands,\n'clear' to clear screen\n");
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim().toLowerCase();
+                game.output(`$ ${input.value}`);
+                
+                if (command === 'start') {
+                    game.startGame();
+                } else if (command === 'help') {
+                    game.output("Available commands:");
+                    game.output("  start - Start a new game");
+                    game.output("  clear - Clear the terminal");
+                    game.output("  help  - Show this help message");
+                } else if (command === 'clear') {
+                    game.clearScreen();
+                } else if (game.gameState === 'guessing') {
+                    game.makeGuess(command);
+                } else {
+                    game.output("Unknown command. Type 'help' for available commands.");
+                }
+                
+                input.value = '';
+            }
+        });
+
+        input.focus();
+    </script>
+</body>
+</html>
