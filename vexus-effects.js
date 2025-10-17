@@ -43,8 +43,12 @@ document.addEventListener('DOMContentLoaded', function() {
         textGridContainer.addEventListener('mouseenter', () => {
             mousePresent = true;
             if (cyberNav) {
+                if (window.innerWidth <= 728) {
+                    cyberNav.classList.add('hidden');
+                    cyberNav.classList.remove('visible');
+                }
                 cyberNav.style.transform = 'translateY(-80%)';
-                cyberNav.style.opacity = '0.1';
+                cyberNav.style.opacity = '0';
             }
         });
         
@@ -62,6 +66,10 @@ document.addEventListener('DOMContentLoaded', function() {
             mouseX = newRect.width / 2;
             mouseY = newRect.height / 2;
             if (cyberNav) {
+                if (window.innerWidth <= 728) {
+                    cyberNav.classList.add('visible');
+                    cyberNav.classList.remove('hidden');
+                }
                 cyberNav.style.transform = 'translateY(0)';
                 cyberNav.style.opacity = '1';
             }
