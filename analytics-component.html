@@ -1,0 +1,81 @@
+<div class="analytics-container">
+    <div class="analytics-sidebar">
+        <div class="analytics-tab active" onclick="showTab('user')">👤 User Stats</div>
+        <div class="analytics-tab" onclick="showTab('global')">🌍 Global Data</div>
+    </div>
+    
+    <div class="analytics-content">
+        <div id="user-tab" class="analytics-tab-content active">
+            <h2>Your Performance</h2>
+            <div class="analytics-metric-grid">
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Games Played</div>
+                    <div class="analytics-big-number" id="user-games">0</div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Accuracy Rate</div>
+                    <div class="analytics-big-number" id="user-accuracy">0%</div>
+                    <div class="analytics-progress-bar">
+                        <div class="analytics-progress-fill" id="accuracy-bar"></div>
+                    </div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Performance Trend</div>
+                    <div class="analytics-chart-container">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Game Times</div>
+                    <div class="analytics-chart-container">
+                        <canvas id="timing-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="global-tab" class="analytics-tab-content">
+            <h2>Global Analytics</h2>
+            <div class="analytics-metric-grid">
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Total Players</div>
+                    <div class="analytics-big-number" id="global-users">0</div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Games Worldwide</div>
+                    <div class="analytics-big-number" id="global-games">0</div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Browser Distribution</div>
+                    <div class="analytics-chart-container">
+                        <canvas id="browser-chart"></canvas>
+                    </div>
+                </div>
+                <div class="analytics-metric-card">
+                    <div class="analytics-metric-title">Global vs Your Accuracy</div>
+                    <div class="analytics-chart-container">
+                        <canvas id="comparison-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-container { display: flex; background: #0a0a0a; color: #fff; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+.analytics-sidebar { width: 200px; background: #1a1a1a; border-right: 2px solid #333; }
+.analytics-tab { padding: 20px; cursor: pointer; border-bottom: 1px solid #333; transition: all 0.3s; }
+.analytics-tab:hover { background: #2a2a2a; }
+.analytics-tab.active { background: #0066cc; }
+.analytics-content { flex: 1; padding: 30px; }
+.analytics-tab-content { display: none; }
+.analytics-tab-content.active { display: block; }
+.analytics-metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.analytics-metric-card { background: #1a1a1a; border-radius: 10px; padding: 20px; border: 1px solid #333; }
+.analytics-metric-title { font-size: 18px; margin-bottom: 15px; color: #0066cc; }
+.analytics-chart-container { height: 200px; position: relative; }
+.analytics-big-number { font-size: 48px; font-weight: bold; text-align: center; color: #00ff88; }
+.analytics-progress-bar { width: 100%; height: 20px; background: #333; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.analytics-progress-fill { height: 100%; background: linear-gradient(90deg, #0066cc, #00ff88); transition: width 0.5s; }
+</style>

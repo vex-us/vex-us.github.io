@@ -34,7 +34,7 @@ class CupGame {
         this.cups = [false, false, false];
         this.cups[this.ballPosition] = true;
         this.gameState = 'showing';
-        
+        this.clearScreen();
         this.output("Welcome to the Cup and Ball Game!");
         this.output("Watch carefully to see where the ball goes...\n");
         this.displayCups(true);
@@ -152,9 +152,9 @@ class CupGame {
             this.saveStats();
             this.syncToCloud();
             
-            this.output("\nType:\n'start' to play again\n'stats' to view analytics\n'help' for commands.");
+            this.output("\nType:\n'start' to play again\n'help' for commands.");
             this.gameState = 'waiting';
-            this.speedMult *= 1.2;
+            this.speedMult *= 1.5;
         }, 1000);
         
         return true;
@@ -271,6 +271,11 @@ class CupGame {
             this.output(`Sessions Played: ${this.stats.sessionsPlayed}`);
             this.output(`First Played: ${new Date(this.stats.firstPlayed).toLocaleDateString()}`);
             this.output(`Games per Session: ${Math.round(this.stats.gamesPlayed / this.stats.sessionsPlayed * 10) / 10}`);
+
+            const performance = this.stats.accuracy >= 70 ? "EXCELLENT" : 
+                    this.stats.accuracy >= 50 ? "GOOD" : 
+                    this.stats.accuracy >= 30 ? "FAIR" : "NEEDS IMPROVEMENT";
+            this.output(`\nPerformance Rating: ${performance}`);
             
             if (this.stats.userProfile) {
                 this.output(`\n--- SYSTEM PROFILE ---`);
@@ -292,10 +297,6 @@ class CupGame {
                 this.output(`Most Active Timezone: ${this.globalStats.topTimezone}`);
             }
             
-            const performance = this.stats.accuracy >= 70 ? "EXCELLENT" : 
-                               this.stats.accuracy >= 50 ? "GOOD" : 
-                               this.stats.accuracy >= 30 ? "FAIR" : "NEEDS IMPROVEMENT";
-            this.output(`\nPerformance Rating: ${performance}`);
         }
         this.output("=====================\n");
     }
@@ -406,6 +407,7 @@ class CupGame {
             
             const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/analytics', {
                 method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -416,40 +418,48 @@ class CupGame {
             
             if (response.ok) {
                 const result = await response.json();
-                console.log('AWS Response:', result);
+                console.log('✅ AWS Analytics synced successfully:', result);
             } else {
-                console.log('AWS Error:', await response.text());
+                console.log('⚠️ AWS API Error:', response.status, await response.text());
             }
         } catch (error) {
-            console.error('AWS API Error:', error);
+            console.log('📡 AWS API unavailable - data saved locally only:', error.message);
         }
     }
 
     async loadGlobalStats() {
         try {
-            console.log('Loading global stats from AWS...');
+            console.log('📊 Loading global stats from AWS...');
             
-            const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats');
+            const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats', {
+                mode: 'cors'
+            });
             
             console.log('Global Stats Response Status:', response.status);
             
             if (response.ok) {
                 this.globalStats = await response.json();
-                console.log('Global Stats Loaded:', this.globalStats);
+                console.log('✅ Global Stats loaded from AWS:', this.globalStats);
             } else {
-                console.log('Global Stats Error:', await response.text());
+                console.log('⚠️ AWS Global Stats Error:', response.status);
+                this.useDefaultGlobalStats();
             }
         } catch (error) {
-            console.error('Global Stats API Error:', error);
-            this.globalStats = {
-                totalUsers: 1247,
-                totalGames: 8934,
-                avgAccuracy: 42,
-                topBrowser: 'Chrome',
-                topTimezone: 'America/New_York',
-                userRankings: []
-            };
+            console.log('📡 AWS API unavailable - using default global stats:', error.message);
+            this.useDefaultGlobalStats();
         }
+    }
+    
+    useDefaultGlobalStats() {
+        this.globalStats = {
+            totalUsers: 1247,
+            totalGames: 8934,
+            avgAccuracy: 42,
+            topBrowser: 'Chrome',
+            topTimezone: 'America/New_York',
+            lastUpdated: new Date().toISOString()
+        };
+        console.log('📈 Using default global stats for demo');
     }
 
     getUserRank() {
