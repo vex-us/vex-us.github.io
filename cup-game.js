@@ -402,7 +402,8 @@ class CupGame {
                 timestamp: Date.now()
             };
             
-            // AWS API Gateway endpoint
+            console.log('Syncing to AWS:', payload);
+            
             const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/analytics', {
                 method: 'POST',
                 headers: {
@@ -411,23 +412,35 @@ class CupGame {
                 body: JSON.stringify(payload)
             });
             
+            console.log('AWS Response Status:', response.status);
+            
             if (response.ok) {
-                console.log('Analytics synced to cloud');
+                const result = await response.json();
+                console.log('AWS Response:', result);
+            } else {
+                console.log('AWS Error:', await response.text());
             }
         } catch (error) {
-            console.log('Cloud sync unavailable - using local storage');
+            console.error('AWS API Error:', error);
         }
     }
 
     async loadGlobalStats() {
         try {
+            console.log('Loading global stats from AWS...');
+            
             const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats');
+            
+            console.log('Global Stats Response Status:', response.status);
             
             if (response.ok) {
                 this.globalStats = await response.json();
+                console.log('Global Stats Loaded:', this.globalStats);
+            } else {
+                console.log('Global Stats Error:', await response.text());
             }
         } catch (error) {
-            // Simulate global stats for demo
+            console.error('Global Stats API Error:', error);
             this.globalStats = {
                 totalUsers: 1247,
                 totalGames: 8934,
