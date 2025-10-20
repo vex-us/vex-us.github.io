@@ -22,7 +22,11 @@ class CupGame {
             firstPlayed: null,
             userProfile: null
         };
-        this.loadStats();
+        this.init();
+    }
+    
+    async init() {
+        await this.loadStats();
         this.collectUserProfile();
         this.updateSessionStats();
         this.loadGlobalStats();
@@ -341,7 +345,26 @@ class CupGame {
         localStorage.setItem('cupGameStats', JSON.stringify(this.stats));
     }
 
-    loadStats() {
+    async loadStats() {
+        // Try to load from AWS first
+        try {
+            // For now, skip AWS user stats fetch until endpoint is available
+            // const response = await fetch(`https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats?userId=${this.userId}`, {
+            //     mode: 'cors'
+            // });
+            
+            if (response.ok) {
+                const awsStats = await response.json();
+                this.stats = awsStats;
+                this.saveStats(); // Update localStorage with AWS data
+                console.log('✅ Stats loaded from AWS');
+                return;
+            }
+        } catch (error) {
+            console.log('📡 AWS unavailable, loading from localStorage');
+        }
+        
+        // Fallback to localStorage
         const saved = localStorage.getItem('cupGameStats');
         if (saved) {
             const loadedStats = JSON.parse(saved);
@@ -403,8 +426,6 @@ class CupGame {
                 timestamp: Date.now()
             };
             
-            console.log('Syncing to AWS:', payload);
-            
             const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/analytics', {
                 method: 'POST',
                 mode: 'cors',
@@ -414,13 +435,16 @@ class CupGame {
                 body: JSON.stringify(payload)
             });
             
-            console.log('AWS Response Status:', response.status);
-            
             if (response.ok) {
                 const result = await response.json();
-                console.log('✅ AWS Analytics synced successfully:', result);
+                // Update local stats with server response
+                if (result.stats) {
+                    this.stats = result.stats;
+                    this.saveStats();
+                }
+                console.log('✅ AWS Analytics synced successfully');
             } else {
-                console.log('⚠️ AWS API Error:', response.status, await response.text());
+                console.log('⚠️ AWS API Error:', response.status);
             }
         } catch (error) {
             console.log('📡 AWS API unavailable - data saved locally only:', error.message);
@@ -429,23 +453,18 @@ class CupGame {
 
     async loadGlobalStats() {
         try {
-            console.log('📊 Loading global stats from AWS...');
-            
             const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats', {
                 mode: 'cors'
             });
             
-            console.log('Global Stats Response Status:', response.status);
-            
             if (response.ok) {
                 this.globalStats = await response.json();
-                console.log('✅ Global Stats loaded from AWS:', this.globalStats);
+                console.log('✅ Global Stats loaded from AWS');
             } else {
-                console.log('⚠️ AWS Global Stats Error:', response.status);
                 this.useDefaultGlobalStats();
             }
         } catch (error) {
-            console.log('📡 AWS API unavailable - using default global stats:', error.message);
+            console.log('📡 AWS API unavailable - using default global stats');
             this.useDefaultGlobalStats();
         }
     }
@@ -463,11 +482,11 @@ class CupGame {
     }
 
     getUserRank() {
-        if (!this.globalStats || !this.stats.gamesPlayed) return 'Unranked';
+        if (!this.globalStats || !this.stats.gamesPlayed || !this.globalStats.userAccuracies) return 'Unranked';
         
-        // Simulate ranking based on accuracy
-        const betterUsers = Math.floor(this.globalStats.totalUsers * (100 - this.stats.accuracy) / 100);
-        return Math.max(1, this.globalStats.totalUsers - betterUsers);
+        const userAccuracy = this.stats.accuracy;
+        const betterUsers = this.globalStats.userAccuracies.filter(acc => acc > userAccuracy).length;
+        return betterUsers + 1;
     }
 
     showGlobalStats() {
