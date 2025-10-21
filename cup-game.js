@@ -167,7 +167,11 @@ class CupGame {
     output(text) {
         const output = document.getElementById('terminal-output');
         output.textContent += text + '\n';
-        output.scrollTop = output.scrollHeight;
+        // Only auto-scroll if user is near terminal
+        const rect = output.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            output.scrollTop = output.scrollHeight;
+        }
     }
 
     clearScreen() {

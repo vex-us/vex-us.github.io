@@ -54,6 +54,7 @@ function updateAnalyticsVisualizations() {
     document.getElementById('global-users').textContent = globalStats.totalUsers || 0;
     document.getElementById('global-games').textContent = globalStats.totalGames || 0;
     document.getElementById('global-accuracy').textContent = (globalStats.avgAccuracy || 0) + '%';
+    document.getElementById('global-accuracy-bar').style.width = (globalStats.avgAccuracy || 0) + '%';
     
     // User ranking
     const userRank = getUserRank();

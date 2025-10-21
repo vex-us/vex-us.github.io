@@ -43,8 +43,8 @@
 
             <!-- Analytics Dashboard -->
             <section class="content-section">
-                <h2 class="section-title">GAME ANALYTICS</h2>
-                <div id="analytics-dashboard"></div>
+                <h2 class="section-title collapsible" onclick="toggleAnalytics()">GAME ANALYTICS <span id="analytics-toggle">▶</span></h2>
+                <div id="analytics-dashboard" class="collapsible-content collapsed"></div>
             </section>
 
             <section class="content-section">
@@ -158,7 +158,8 @@
             }
         });
 
-        input.focus();
+        // Remove auto-focus to prevent scroll hijacking
+        // input.focus();
         
         // Load analytics component
         fetch('analytics-component.html')
@@ -166,6 +167,24 @@
             .then(html => {
                 document.getElementById('analytics-dashboard').innerHTML = html;
             });
+        
+        // Analytics collapse functionality
+        function toggleAnalytics() {
+            const dashboard = document.getElementById('analytics-dashboard');
+            const toggle = document.getElementById('analytics-toggle');
+            
+            if (dashboard.classList.contains('collapsed')) {
+                dashboard.classList.remove('collapsed');
+                dashboard.style.maxHeight = dashboard.scrollHeight + 'px';
+                toggle.textContent = '▼';
+            } else {
+                dashboard.classList.add('collapsed');
+                dashboard.style.maxHeight = '0';
+                toggle.textContent = '▶';
+            }
+        }
+        
+        window.toggleAnalytics = toggleAnalytics;
     </script>
 </body>
 </html>
