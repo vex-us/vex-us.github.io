@@ -156,6 +156,10 @@ class CupGame {
             this.saveStats();
             this.syncToCloud();
             
+            if (typeof window.refreshAnalytics === 'function') {
+                window.refreshAnalytics();
+            }
+            
             this.output("\nType:\n'start' to play again\n'help' for commands.");
             this.gameState = 'waiting';
             this.speedMult *= 1.5;

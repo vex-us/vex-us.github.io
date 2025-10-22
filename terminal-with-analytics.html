@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal with Analytics</title>
+    <link rel="stylesheet" href="vexus-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="cyberpunk-container">
+        <div class="cyber-terminal" id="main-terminal">
+            <div class="terminal-header">VEXUS TERMINAL v1.0</div>
+            <div class="terminal-output" id="terminal-output"></div>
+            <div class="terminal-input-line">
+                <span class="terminal-prompt">$</span>
+                <input type="text" class="terminal-input" id="terminal-input" placeholder="Type 'start' to begin the game">
+            </div>
+        </div>
+    </div>
+
+    <script src="cup-game.js"></script>
+    <script src="analytics-footer.js"></script>
+    <script>
+        function adjustTerminalFontSize() {
+            const output = document.getElementById('terminal-output');
+            const input = document.querySelector('.terminal-input');
+            
+            const viewportWidth = window.innerWidth;
+            const fontSize = Math.max(8, Math.min(28, (viewportWidth - 235) * 21 / 1400 + 11));
+            
+            output.style.fontSize = fontSize + 'px';
+            input.style.fontSize = fontSize + 'px';
+        }
+
+        const game = new CupGame();
+        const input = document.getElementById('terminal-input');
+        const terminal = document.getElementById('main-terminal');
+
+        adjustTerminalFontSize();
+        window.addEventListener('resize', adjustTerminalFontSize);
+
+        game.output("VEXUS TERMINAL v1.0 - Cup & Ball Game");
+        game.output("Type:\n'start' to begin,\n'help' for commands,\n'clear' to clear screen\n");
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim().toLowerCase();
+                game.output(`$ ${input.value}`);
+                
+                if (command === 'start') {
+                    game.startGame();
+                } else if (command === 'stats') {
+                    game.showStats();
+                } else if (command === 'reset') {
+                    game.resetStats();
+                } else if (command === 'global') {
+                    game.showGlobalStats();
+                } else if (command === 'help') {
+                    game.output("Available commands:");
+                    game.output("  start - Start a new game");
+                    game.output("  stats - View personal analytics");
+                    game.output("  global - View global analytics");
+                    game.output("  reset - Reset statistics");
+                    game.output("  clear - Clear the terminal");
+                    game.output("  help  - Show this help message");
+                } else if (command === 'clear') {
+                    game.clearScreen();
+                } else if (game.gameState === 'guessing') {
+                    game.makeGuess(command);
+                } else {
+                    game.output("Unknown command. Type 'help' for available commands.");
+                }
+                
+                input.value = '';
+            }
+        });
+
+        // Add analytics footer to terminal
+        createAnalyticsFooter(terminal);
+    </script>
+</body>
+</html>

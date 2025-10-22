@@ -32,7 +32,7 @@
                 <p class="tagline">Comprehensive Technical Expertise</p>
             </section>
 
-            <div class="cyber-terminal">
+            <div class="cyber-terminal" id="main-terminal">
                 <div class="terminal-header">VEXUS TERMINAL v1.0</div>
                 <div class="terminal-output" id="terminal-output"></div>
                 <div class="terminal-input-line">
@@ -40,12 +40,6 @@
                     <input type="text" class="terminal-input" id="terminal-input" placeholder="Type 'start' to begin the game">
                 </div>
             </div>
-
-            <!-- Analytics Dashboard -->
-            <section class="content-section">
-                <h2 class="section-title collapsible" onclick="toggleAnalytics()">GAME ANALYTICS <span id="analytics-toggle">▶</span></h2>
-                <div id="analytics-dashboard" class="collapsible-content collapsed"></div>
-            </section>
 
             <section class="content-section">
                 <h2 class="section-title">DATA ANALYTICS</h2>
@@ -102,7 +96,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="vexus-effects.js"></script>
     <script src="cup-game.js"></script>
-    <script src="analytics.js"></script>
+    <script src="analytics-footer.js"></script>
     <script>
         function adjustTerminalFontSize() {
             const terminal = document.querySelector('.cyber-terminal');
@@ -118,6 +112,7 @@
 
         const game = new CupGame();
         const input = document.getElementById('terminal-input');
+        const terminal = document.getElementById('main-terminal');
 
         adjustTerminalFontSize();
         window.addEventListener('resize', adjustTerminalFontSize);
@@ -158,33 +153,8 @@
             }
         });
 
-        // Remove auto-focus to prevent scroll hijacking
-        // input.focus();
-        
-        // Load analytics component
-        fetch('analytics-component.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('analytics-dashboard').innerHTML = html;
-            });
-        
-        // Analytics collapse functionality
-        function toggleAnalytics() {
-            const dashboard = document.getElementById('analytics-dashboard');
-            const toggle = document.getElementById('analytics-toggle');
-            
-            if (dashboard.classList.contains('collapsed')) {
-                dashboard.classList.remove('collapsed');
-                dashboard.style.maxHeight = dashboard.scrollHeight + 'px';
-                toggle.textContent = '▼';
-            } else {
-                dashboard.classList.add('collapsed');
-                dashboard.style.maxHeight = '0';
-                toggle.textContent = '▶';
-            }
-        }
-        
-        window.toggleAnalytics = toggleAnalytics;
+        // Add analytics footer to terminal
+        createAnalyticsFooter(terminal);
     </script>
 </body>
 </html>
