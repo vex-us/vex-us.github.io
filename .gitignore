@@ -1,2 +1,4 @@
 analytics-component.html
 analytics.html
+analytics.js
+aws-user-stats-lambda.js

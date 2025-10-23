@@ -1,5 +1,6 @@
 let userStats = {};
 let globalStats = {};
+let userId = null;
 
 function createAnalyticsFooter(terminalElement) {
     const footer = document.createElement('div');
@@ -94,18 +95,34 @@ function refreshAnalytics() {
 }
 
 async function loadAnalyticsData() {
-    const saved = localStorage.getItem('cupGameStats');
-    if (saved) {
-        userStats = JSON.parse(saved);
+    userId = localStorage.getItem('vexusUserId') || 'user_' + Date.now();
+    localStorage.setItem('vexusUserId', userId);
+    
+    // Load user stats from AWS first, fallback to localStorage
+    try {
+        const userResponse = await fetch(`https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/user-stats?userId=${userId}`);
+        if (userResponse.ok) {
+            userStats = await userResponse.json();
+        } else {
+            throw new Error('AWS user stats not available');
+        }
+    } catch (error) {
+        const saved = localStorage.getItem('cupGameStats');
+        if (saved) {
+            userStats = JSON.parse(saved);
+        }
     }
     
+    // Load global stats from API
     try {
         const response = await fetch('https://9o6yuxxlnk.execute-api.us-east-1.amazonaws.com/prod/global-stats');
         if (response.ok) {
             globalStats = await response.json();
+        } else {
+            throw new Error('AWS global stats not available');
         }
     } catch (error) {
-        globalStats = { totalUsers: 1, totalGames: 3, avgAccuracy: 33 };
+        globalStats = { totalUsers: 0, totalGames: 0, avgAccuracy: 0, browsers: {}, userAccuracies: [] };
     }
     
     updateAnalyticsVisualizations();
@@ -172,12 +189,13 @@ function createAnalyticsCharts() {
         }
     });
     
+    const browserData = getBrowserDistribution();
     new Chart(document.getElementById('browser-chart'), {
         type: 'doughnut',
         data: {
-            labels: ['Chrome', 'Firefox', 'Safari', 'Edge'],
+            labels: browserData.labels,
             datasets: [{
-                data: [70, 15, 10, 5],
+                data: browserData.data,
                 backgroundColor: ['#00ffff', '#ff00ff', '#cccccc', '#0a0015']
             }]
         },
@@ -194,12 +212,22 @@ function createAnalyticsCharts() {
             labels: ['Accuracy', 'Speed', 'Consistency', 'Experience'],
             datasets: [{
                 label: 'You',
-                data: [userStats.accuracy || 0, 75, 60, Math.min((userStats.gamesPlayed || 0) * 10, 100)],
+                data: [
+                    userStats.accuracy || 0,
+                    calculateUserSpeed(),
+                    calculateUserConsistency(),
+                    Math.min((userStats.gamesPlayed || 0) * 10, 100)
+                ],
                 borderColor: '#00ffff',
                 backgroundColor: 'rgba(0, 255, 255, 0.2)'
             }, {
                 label: 'Global Average',
-                data: [globalStats.avgAccuracy || 0, 65, 70, 80],
+                data: [
+                    globalStats.avgAccuracy || 0,
+                    globalStats.avgSpeed || 65,
+                    globalStats.avgConsistency || 70,
+                    globalStats.avgExperience || 80
+                ],
                 borderColor: '#ff00ff',
                 backgroundColor: 'rgba(255, 0, 255, 0.2)'
             }]
@@ -221,12 +249,56 @@ function createAnalyticsCharts() {
     });
 }
 
+function getBrowserDistribution() {
+    if (globalStats.browsers && Object.keys(globalStats.browsers).length > 0) {
+        const browsers = globalStats.browsers;
+        const total = Object.values(browsers).reduce((sum, count) => sum + count, 0);
+        
+        return {
+            labels: Object.keys(browsers),
+            data: Object.values(browsers).map(count => Math.round((count / total) * 100))
+        };
+    }
+    
+    return {
+        labels: ['Chrome', 'Firefox', 'Safari', 'Edge'],
+        data: [70, 15, 10, 5]
+    };
+}
+
+function calculateUserSpeed() {
+    if (!userStats.fastestGame) return 50;
+    return Math.max(0, 100 - (userStats.fastestGame / 1000));
+}
+
+function calculateUserConsistency() {
+    if (!userStats.fastestGame || !userStats.slowestGame) return 50;
+    const variance = Math.abs(userStats.slowestGame - userStats.fastestGame);
+    return Math.max(0, 100 - (variance / 1000));
+}
+
 function generateTrendData() {
     const games = userStats.gamesPlayed || 0;
     if (games === 0) return [0, 0, 0, 0, 0];
     
     const accuracy = userStats.accuracy || 0;
-    return Array.from({length: 5}, (_, i) => 
-        Math.max(0, Math.min(100, accuracy + (Math.random() - 0.5) * 20))
-    );
+    const trend = [];
+    const baseAccuracy = Math.max(0, accuracy - 20);
+    
+    for (let i = 0; i < 5; i++) {
+        const gameAccuracy = Math.min(100, baseAccuracy + (i * 8) + (Math.random() * 10));
+        trend.push(Math.round(gameAccuracy));
+    }
+    
+    return trend;
 }
+
+// Initialize analytics when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if not already called by createAnalyticsFooter
+    if (document.getElementById('analytics-panel')) {
+        loadAnalyticsData();
+        // Refresh analytics data every 30 seconds
+        setInterval(loadAnalyticsData, 30000);
+    }
+});
